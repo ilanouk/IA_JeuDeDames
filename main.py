@@ -29,7 +29,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
             
-            #si on clique sur la souris
+            #si on clique sur la souris et ca renvoie un tuple avec les coordonnées du clic
             if pygame.mouse.get_pressed()[0]:
                 location = pygame.mouse.get_pos()
                 print(location)

@@ -29,15 +29,8 @@ class Damier:
                 pygame.draw.rect(display, CASE_CLAIRE, (line*SQUARE_SIZE, col*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 #
 
+
 class Pion:
-
-    #liste contenant les coordonnées des pions blancs
-    coordo_pionB = []
-    idxB=0
-
-    #liste contenant les coordonnées des pions noirs
-    coordo_pionN = []
-    idxN=0
 
     #fonction qui permet de dessiner les PIONS
     def draw_pion(self, display):
@@ -55,4 +48,6 @@ class Pion:
             for col in range((line%2)+6, COLS, 2):
                 #pygame.draw.circle(surface, color, pos, radius, width=0)
                 pygame.draw.circle(display, (255,255,255), ((line*SQUARE_SIZE)-40, (col*SQUARE_SIZE)+40), 20)
+
+    #obtenir la position des pions
 #
