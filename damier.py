@@ -40,14 +40,14 @@ class Pion:
             #intervalle partant de "line % 2" jusqu'à "COLS" avec un pas de 2
             for col in range(line%2, COLS-6, 2):
                 #pygame.draw.circle(surface, color, pos, radius, width=0)
-                pygame.draw.circle(display, (0,0,0), ((line*SQUARE_SIZE)-40, (col*SQUARE_SIZE)+40), 20)
+                pygame.draw.circle(display, (0,0,0), ((line*SQUARE_SIZE)-40, (col*SQUARE_SIZE)+40), 30)
 
         #boucles permettant de dessiner les pions BLANCS
         for line in range(LINES+1):
             #intervalle partant de "line % 2" jusqu'à "COLS" avec un pas de 2
             for col in range((line%2)+6, COLS, 2):
                 #pygame.draw.circle(surface, color, pos, radius, width=0)
-                pygame.draw.circle(display, (255,255,255), ((line*SQUARE_SIZE)-40, (col*SQUARE_SIZE)+40), 20)
+                pygame.draw.circle(display, (255,255,255), ((line*SQUARE_SIZE)-40, (col*SQUARE_SIZE)+40), 30)
 
     #obtenir la position des pions
 #
