@@ -1,43 +1,48 @@
+# Description: Jeu de dames en python, en JvsJ, ou contre une IA à différents niveaux,
+#              utilisant l'algorithme de l'élagage alpha-beta.
+#
+# Author: @Ilan' DAUMONT-OUK
+#         @Sam 
+
 import pygame
-from damier import Damier, Pion
+from dames.constants import *
+from dames.board import *
 
-#largeur et hauteur de l'image
-WIDTH, HEIGHT = 800, 800
+FPS = 60
 
-#nb de lignes et de colonnes
-LINES, COLS = 10, 10
-
-#taille d'une case
-SQUARE_SIZE = WIDTH//COLS
-
-#couleurs des 2 types de cases
-CASE_CLAIRE = (220,191,145)
-CASE_SOMBRE = (138,88,41)
-
-# CLASSE PRINCIPALE ------------------------------------------------------------
-DISPLAYSURF = pygame.display.set_mode((WIDTH, HEIGHT))
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Jeu de dames')
 
+#permet d'obtenir la case sur laquelle on clique
+def get_row_col_from_mouse(pos):
+    x, y = pos
+    row = y // SQUARE_SIZE
+    col = x // SQUARE_SIZE
+    return row, col
 
+#----------------MAIN----------------
 
 def main():
-
     run = True
+    clock = pygame.time.Clock()
+    board = Board()
 
     while run:
+        clock.tick(FPS)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            
-            #si on clique sur la souris et ca renvoie un tuple avec les coordonnées du clic
-            if pygame.mouse.get_pressed()[0]:
-                location = pygame.mouse.get_pos()
-                print(location)
-                
-        Damier.draw_cel(None,DISPLAYSURF)
-        Pion.draw_pion(None,DISPLAYSURF)
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                row, col = get_row_col_from_mouse(pos)
+                piece = board.get_piece(row, col)
+                board.move(piece, 4, 3)
+
+        board.draw(WIN)
         pygame.display.update()
-    
+
     pygame.quit()
 
 main()
