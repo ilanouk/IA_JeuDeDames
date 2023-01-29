@@ -6,7 +6,7 @@
 
 import pygame
 from dames.constants import *
-from dames.board import *
+from dames.jeu import *
 
 FPS = 60
 
@@ -25,7 +25,7 @@ def get_row_col_from_mouse(pos):
 def main():
     run = True
     clock = pygame.time.Clock()
-    board = Board()
+    jeu = Jeu(WIN)
 
     while run:
         clock.tick(FPS)
@@ -40,8 +40,7 @@ def main():
                 piece = board.get_piece(row, col)
                 board.move(piece, 4, 3)
 
-        board.draw(WIN)
-        pygame.display.update()
+        jeu.update()
 
     pygame.quit()
 

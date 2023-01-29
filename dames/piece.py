@@ -12,11 +12,6 @@ class Piece:
         self.col = col
         self.color = color
 
-        if self.color == CASE_SOMBRE:
-            self.direction = 1
-        else:
-            self.direction = -1
-
         self.x = 0
         self.y = 0
         self.calc_pos()
