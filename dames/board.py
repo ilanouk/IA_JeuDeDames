@@ -12,6 +12,19 @@ class Board:
         self.white_left = 20
         self.create_board()
 
+#----------------------------- PARTIE IA -----------------------------
+
+    # fonction d'évaluation
+    def evaluate(self):
+        pass
+
+    # permet d'obtenir les mouvements possibles de toutes les pièces d'une couleur
+    def get_all_pieces(self, color):
+        pass
+
+
+#---------------------------------------------------------------------
+
     # crée les cases du damier
     def draw_squares(self, win):
 
@@ -64,10 +77,13 @@ class Board:
                 break
 
             current = self.board[row][left]
+            # si la case est vide
             if current == 0:
+                # si on a sauté une pièce et qu'on est pas à la fin du damier
                 if skipped and not last:
                     break
                 elif skipped:
+                    # on ajoute la case où on peut aller
                     moves[(row, left)] = last + skipped
                 else:
                     moves[(row, left)] = last
@@ -80,16 +96,57 @@ class Board:
                     moves.update(self._traverse_left(row + step, row, step, color, left - 1, skipped=last))
                     moves.update(self._traverse_right(row + step, row, step, color, left + 1, skipped=last))
                 break
+            # si la case est de la même couleur que la pièce
             elif current.color == color:
                 break
+            # si la case est de la couleur opposée
             else:
                 last = [current]
 
             left -= 1
 
+        return moves
+
     #                         debut et fin, pas(haut/bas), couleur, direction, sauté
     def _traverse_right(self, start, stop, step, color, right, skipped=[]):
-        pass
+        moves = {}
+        last = []
+
+        for row in range(start, stop, step):
+            # si on est hors du damier, on arrête
+            if right >= COLS:
+                break
+
+            current = self.board[row][right]
+            # si la case est vide
+            if current == 0:
+                # si on a sauté une pièce et qu'on est pas à la fin du damier
+                if skipped and not last:
+                    break
+                elif skipped:
+                    # on ajoute la case où on peut aller
+                    moves[(row, right)] = last + skipped
+                else:
+                    moves[(row, right)] = last
+
+                if last:
+                    if step == -1:
+                        row = max(row - 3, 0)
+                    else:
+                        row = min(row + 3, ROWS)
+                    moves.update(self._traverse_left(row + step, row, step, color, right - 1, skipped=last))
+                    moves.update(self._traverse_right(row + step, row, step, color, right + 1, skipped=last))
+                break
+            # si la case est de la même couleur que la pièce
+            elif current.color == color:
+                break
+            # si la case est de la couleur opposée
+            else:
+                last = [current]
+
+            right += 1
+
+        return moves
 
     # permet d'obtenir les cases où on peut aller
     def get_valid_moves(self, piece):
@@ -109,3 +166,13 @@ class Board:
             moves.update(self._traverse_right(row + 1, min(row + 3, ROWS), 1, piece.color, right))
 
         return moves # retourne les cases où on peut aller
+
+    # permet de supprimer une pièce
+    def remove(self, pieces):
+        for piece in pieces:
+            self.board[piece.row][piece.col] = 0
+            if piece != 0:
+                if piece.color == BLANC:
+                    self.white_left -= 1
+                else:
+                    self.black_left -= 1

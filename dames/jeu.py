@@ -10,9 +10,21 @@ class Jeu:
         self._init()
         self.win = win
 
+
+#----------------------------- PARTIE IA -----------------------------
+
+    # renvoie le nouveau tableau avec le mouvement effectué
+    def ia_move(self, board):
+        pass
+
+
+#---------------------------------------------------------------------
+
+
     # màj de l'affichage du jeu
     def update(self):
         self.board.draw(self.win)
+        self.draw_valid_moves(self.valid_moves, self.win)
         pygame.display.update()
 
     # remet à zéro le jeu
@@ -36,13 +48,12 @@ class Jeu:
                 self.selected = None
                 self.select(row, col)
 
-        else:
-            piece = self.board.get_piece(row, col)
-            # si la pièce est de la bonne couleur, on la sélectionne
-            if piece != 0 and piece.color == self.turn:
-                self.selected = piece
-                self.valid_moves = self.board.get_valid_moves(piece)
-                return True
+        piece = self.board.get_piece(row, col)
+        # si la pièce est de la bonne couleur, on la sélectionne
+        if piece != 0 and piece.color == self.turn:
+            self.selected = piece
+            self.valid_moves = self.board.get_valid_moves(piece)
+            return True
 
         return False
     
@@ -52,14 +63,31 @@ class Jeu:
         # si la case est vide, on bouge la pièce
         if self.selected and piece == 0 and (row, col) in self.valid_moves:
             self.board.move(self.selected, row, col)
+            skipped = self.valid_moves[(row, col)]
             self.change_turn()
+
+            # si on a sauté une pièce
+            if skipped:
+                # on la supprime
+                self.board.remove(skipped)
+
         else:
             return False
         return True
     
+    def get_board(self):
+        return self.board
+    
     # permet de changer de joueur
     def change_turn(self):
+        self.valid_moves = {}
         if self.turn == BLANC:
             self.turn = NOIR
         else:
             self.turn = BLANC
+
+    # permet de savoir où on peut bouger une pièce
+    def draw_valid_moves(self, moves, win):
+        for move in moves:
+            row, col = move
+            pygame.draw.circle(win, (255, 0, 0), (col * SQUARE_SIZE + SQUARE_SIZE//2, row * SQUARE_SIZE + SQUARE_SIZE//2), 15)
