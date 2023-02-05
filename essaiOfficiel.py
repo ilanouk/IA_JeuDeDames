@@ -1,3 +1,9 @@
+# Description: Jeu de dames en python, en JvsJ, ou contre une IA à différents niveaux,
+#              utilisant l'algorithme de l'élagage alpha-beta.
+#
+# Author: @Ilan' DAUMONT-OUK
+#         @Sam 
+
 import pygame
 
 #CONSTANTE  ----------------------------------------------------------------
