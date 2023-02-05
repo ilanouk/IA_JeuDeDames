@@ -15,7 +15,7 @@ class Board:
 #----------------------------- PARTIE IA -----------------------------
 
     # fonction d'évaluation
-    def evaluate(self):
+    def eval(self):
         pass
 
     # permet d'obtenir les mouvements possibles de toutes les pièces d'une couleur
