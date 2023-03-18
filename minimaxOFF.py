@@ -298,7 +298,8 @@ class Board:
         return moves
 
 
-# CLASSE GAME ----------------------------------------------------------------
+
+# CLASSE GAME ----------------------------------------------------------------
 class Partie:
     def __init__(self, win):
         self.selected = None
@@ -473,22 +474,31 @@ class Partie:
 
 
 def minimax(position, depth, alpha, beta, max_player, game):
+    #si la profondeur est atteinte ou si la partie est terminée, on retourne l'évaluation de la position
     if depth == 0 or position.winner() != None:
         return position.evaluate(), position
     
+    #si c'est au joueur de maximiser son score
     if max_player:
         maxEval = float('-inf')
         best_move = None
+        #on parcourt toutes les positions possibles à partir de la position actuelle
         for move in get_all_moves(position, WHITE, game):
+            #on calcule l'évaluation de la position
             evaluation = minimax(move, depth-1, alpha, beta, False, game)[0]
+            #la meilleure évalutation choisi est celle qui maximise l'évaluation
             maxEval = max(maxEval, evaluation)
+            #si l'évaluation maximale est égale à l'évaluation actuelle, on stocke la position actuelle comme la meilleure position
             if maxEval == evaluation:
                 best_move = move
+            #alpha est la meilleure évaluation maximale pour le joueur MAX
             alpha = max(alpha, maxEval)
+            #si alpha est supérieur ou égal à beta, on arrête la recherche
             if beta <= alpha:
                 break
         
         return maxEval, best_move
+    #si c'est au joueur de minimiser son score
     else:
         minEval = float('inf')
         best_move = None
@@ -559,10 +569,11 @@ def get_row_col_from_mouse(pos):
 
 
 #FONCTIONNEMENT :
-#La fonction main2() a pour rôle de permettre à l'utilisateur de jouer au jeu d'échecs contre un adversaire, qui peut être soit un autre joueur soit l'ordinateur.
+#La fonction main() a pour rôle de permettre à l'utilisateur de jouer au jeu d'échecs contre un adversaire, qui peut être soit un autre joueur soit l'ordinateur.
 #Le jeu utilise la bibliothèque Pygame pour afficher le plateau de jeu et les pièces, et pour gérer les interactions avec l'utilisateur.
 #La première partie de la fonction demande à l'utilisateur s'il veut jouer contre l'ordinateur ou contre un autre joueur. Si l'utilisateur choisit de jouer contre l'ordinateur,
 #la fonction lui demande ensuite de choisir le niveau de difficulté de l'ordinateur (facile, moyen ou difficile).
+#Le niveau facile a une pronfondeur de recherche de 3, le niveau moyen a une profondeur de recherche de 4, et le niveau difficile a une profondeur de recherche de 5.
 #Ensuite, la fonction entre dans une boucle principale qui gère le déroulement du jeu. Si c'est le tour de l'ordinateur et que l'utilisateur a choisi de jouer contre l'ordinateur,
 #la fonction utilise l'algorithme Minimax pour déterminer le meilleur coup à jouer, en utilisant le niveau de difficulté choisi par l'utilisateur
 #pour régler la profondeur de recherche de l'algorithme. Sinon, si c'est le tour d'un joueur, la fonction attend que le joueur sélectionne une pièce à déplacer

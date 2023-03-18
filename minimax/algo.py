@@ -5,7 +5,6 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 
-# A VERIFIER, C'EST FAIT AVEC BOT_IA
 def minimax( pos, depth, max_player, jeu ):
     if depth == 0 or jeu.game_over():
         return jeu.evaluate(), pos
