@@ -16,7 +16,9 @@ YELLOW = (255,255,0)
 CASE_CLAIRE = (220,191,145)
 CASE_SOMBRE = (138,88,41)
 
-CROWN = pygame.transform.scale(pygame.image.load('/Users/samlelouey/Desktop/crown.png'), (44, 25))
+#C:/Users/iland/OneDrive/Images/Captures d’écran/Oui.png
+#/Users/samlelouey/Desktop/crown.png
+CROWN = pygame.transform.scale(pygame.image.load('C:/Users/iland/OneDrive/Images/Captures d’écran/Oui.png'), (44, 25))
 
 # CLASSE PIECE ---------------------------------------------------------------------------
 class Piece:
@@ -64,7 +66,7 @@ class Board:
     
     def draw_squares(self, win):
         win.fill(BLACK)
-        for row in range(ROWS):
+        for row in range(LIGNES):
             for col in range(row % 2, COLS, 2):
                 pygame.draw.rect(win, RED, (row*SQUARE_SIZE, col *SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
@@ -587,6 +589,7 @@ def main():
     #partie est une instance de la classe Partie qui représente l'état du plateau de jeu et permet de gérer les déplacements des pièces.
     partie = Partie(WIN)
     vs_ai = False  # variable pour indiquer si l'utilisateur joue contre l'ordinateur ou contre un autre joueur
+    ia_vs_ia = False # variable pour indiquer si l'utilisateur veut que l'ordinateur joue contre lui-même
     ai_level = 1  # niveau de difficulté de l'ordinateur, 1 pour facile, 2 pour moyen, 3 pour difficile
     player1 = ""
     player2 = ""
@@ -594,7 +597,7 @@ def main():
     # demander à l'utilisateur s'il veut jouer contre l'ordinateur ou contre un autre joueur
     #Cette boucle permet de demander à l'utilisateur s'il veut jouer contre l'ordinateur ou contre un autre joueur.
     while True:
-        choix = input("Voulez-vous jouer contre l'ordinateur ? (O/N) : ")
+        choix = input("Voulez-vous jouer contre l'ordinateur ou IAvsIA? (O/N/IA) : ")
         #Si l'utilisateur choisit de jouer contre l'ordinateur, la variable vs_ai est mise à True.
         if choix.lower() == 'o':
             vs_ai = True
@@ -612,11 +615,25 @@ def main():
         #Sinon, si l'utilisateur choisit de jouer contre un autre joueur, la boucle se termine.
         elif choix.lower() == 'n':
             break
+        #IAvsIA
+        elif choix.lower() == 'ia':
+            ia_vs_ia = True
+            while True:
+                ai_level_input = input("Niveau de difficulté de l'IA, l'autre est niveau moyen (1 pour facile, 2 pour moyen, 3 pour difficile) : ")
+                try:
+                    ai_level = int(ai_level_input)
+                    if ai_level in [1, 2, 3]:
+                        break
+                    else:
+                        print("Choix invalide. Veuillez saisir 1, 2 ou 3.")
+                except:
+                    print("Choix invalide. Veuillez saisir 1, 2 ou 3.")
+            break
         #Si l'utilisateur saisit autre chose que 'O' ou 'N', un message d'erreur est affiché et la boucle continue.
         else:
-            print("Choix invalide. Veuillez saisir 'O' ou 'N'.")
+            print("Choix invalide. Veuillez saisir 'O' ou 'N' ou 'IA'.")
      # si l'utilisateur joue contre un autre joueur, demander les noms des joueurs
-    if not vs_ai:
+    if not (vs_ai or ia_vs_ia):
         player1 = input("Nom du joueur 1 : ")
         player2 = input("Nom du joueur 2 : ")
 
@@ -624,7 +641,7 @@ def main():
     while run:
         #Si c'est le tour de l'ordinateur et que l'utilisateur joue contre l'ordinateur (vs_ai == True),
         #la fonction minimax() est appelée pour déterminer le meilleur coup à jouer, et le coup est joué en appelant la méthode ai_move() de l'objet partie.
-        if partie.turn == WHITE and vs_ai:
+        if partie.turn == WHITE and (vs_ai or ia_vs_ia):
             if ai_level == 1:
                 value, new_board = minimax(partie.get_board(), 3, float('-inf'), float('inf'), True, partie)
             elif ai_level == 2:
@@ -636,7 +653,7 @@ def main():
         #Si c'est le tour d'un joueur et que l'utilisateur joue contre un autre joueur (vs_ai == False),
         #la fonction attend que le joueur sélectionne une pièce à déplacer en cliquant dessus avec la souris,
         #puis attend qu'il sélectionne la case de destination en cliquant à nouveau avec la souris.
-        elif partie.turn == WHITE and not vs_ai:
+        elif partie.turn == WHITE and not (vs_ai or ia_vs_ia):
             # l'utilisateur joue avec les pièces blanches
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -646,7 +663,8 @@ def main():
                     pos = pygame.mouse.get_pos()
                     lignes, col = get_row_col_from_mouse(pos)
                     partie.select(lignes, col)
-        elif partie.turn == BLACK:
+
+        elif partie.turn == BLACK and not ia_vs_ia:
             # l'utilisateur joue avec les pièces noires
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -657,11 +675,16 @@ def main():
                     lignes, col = get_row_col_from_mouse(pos)
                     partie.select(lignes, col)
 
+        elif partie.turn == BLACK and ia_vs_ia:
+            value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
+            partie.ai_move(new_board)
+
+
         #Cette partie du code vérifie si un joueur a gagné la partie en appelant la méthode winner() de l'objet partie.
         #Si la méthode retourne une valeur différente de None, cela signifie qu'un joueur a gagné, et le nom du gagnant
         #est imprimé sur la console à l'aide de la fonction print(). Ensuite, la variable run est définie à False,
         #ce qui arrête la boucle principale et permet à l'utilisateur de quitter le jeu en appuyant sur la croix de la fenêtre.
-        if partie.winner() != None:
+        if partie.winner() == player1 or player2:
             #print(partie.winner())
 
             # afficher le nom du gagnant s'il y en a un, sinon afficher "Match nul"
