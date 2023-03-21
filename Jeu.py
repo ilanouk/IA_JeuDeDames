@@ -589,6 +589,7 @@ def main():
     run = True
     #partie est une instance de la classe Partie qui représente l'état du plateau de jeu et permet de gérer les déplacements des pièces.
     partie = Partie(WIN)
+    partie2 = Partie(WIN)
     vs_ai = False  # variable pour indiquer si l'utilisateur joue contre l'ordinateur ou contre un autre joueur
     ia_vs_ia = False # variable pour indiquer si l'utilisateur veut que l'ordinateur joue contre lui-même
     ai_level = 1  # niveau de difficulté de l'ordinateur, 1 pour facile, 2 pour moyen, 3 pour difficile
@@ -656,16 +657,10 @@ def main():
                     value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
                 else:
                     value, new_board = minimax(partie.get_board(), 5, float('-inf'), float('inf'), True, partie)
-                
+                partie.ai_move(new_board)
             else:
-                if ai_level == 1:
-                    value, new_board = minimax(partie.get_board(), 3, float('-inf'), float('inf'), True, partie)
-                elif ai_level == 2:
-                    value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
-                else:
-                    value, new_board = minimax(partie.get_board(), 5, float('-inf'), float('inf'), True, partie)
-                
-            partie.ai_move(new_board)
+                value, new_board = minimax(partie2.get_board(), 4, float('-inf'), float('inf'), True, partie2)
+                partie2.ai_move(new_board)
 
 
         #Si c'est le tour de l'ordinateur et que l'utilisateur joue contre l'ordinateur (vs_ai == True),
