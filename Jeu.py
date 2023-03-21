@@ -474,7 +474,7 @@ class Partie:
         
         #return minEval, best_move
 
-
+#fonction minimax qui utilise alpha beta, on aurait donc pu l'appeler alphabeta
 def minimax(position, depth, alpha, beta, max_player, game):
     #si la profondeur est atteinte ou si la partie est terminée, on retourne l'évaluation de la position
     if depth == 0 or position.winner() != None:
@@ -647,9 +647,30 @@ def main():
     #Cette partie de la boucle gère les tours de jeu.
     while run:
 
+        #lorsqu'une ia joue contre une autre ia, il faut qu'a chaque tour, une ia joue puis l'autre
+        if ia_vs_ia:
+            if partie.turn == WHITE:
+                if ai_level == 1:
+                    value, new_board = minimax(partie.get_board(), 3, float('-inf'), float('inf'), True, partie)
+                elif ai_level == 2:
+                    value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
+                else:
+                    value, new_board = minimax(partie.get_board(), 5, float('-inf'), float('inf'), True, partie)
+                
+            else:
+                if ai_level == 1:
+                    value, new_board = minimax(partie.get_board(), 3, float('-inf'), float('inf'), True, partie)
+                elif ai_level == 2:
+                    value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
+                else:
+                    value, new_board = minimax(partie.get_board(), 5, float('-inf'), float('inf'), True, partie)
+                
+            partie.ai_move(new_board)
+
+
         #Si c'est le tour de l'ordinateur et que l'utilisateur joue contre l'ordinateur (vs_ai == True),
         #la fonction minimax() est appelée pour déterminer le meilleur coup à jouer, et le coup est joué en appelant la méthode ai_move() de l'objet partie.
-        if partie.turn == WHITE and (vs_ai or ia_vs_ia):
+        if partie.turn == WHITE and vs_ai:
             
             if ai_level == 1:
                 value, new_board = minimax(partie.get_board(), 3, float('-inf'), float('inf'), True, partie)
@@ -664,7 +685,7 @@ def main():
         #Si c'est le tour d'un joueur et que l'utilisateur joue contre un autre joueur (vs_ai == False),
         #la fonction attend que le joueur sélectionne une pièce à déplacer en cliquant dessus avec la souris,
         #puis attend qu'il sélectionne la case de destination en cliquant à nouveau avec la souris.
-        elif partie.turn == WHITE and not (vs_ai or ia_vs_ia):
+        elif partie.turn == WHITE and not vs_ai:
             # l'utilisateur joue avec les pièces blanches
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -675,7 +696,7 @@ def main():
                     lignes, col = get_row_col_from_mouse(pos)
                     partie.select(lignes, col)
 
-        elif partie.turn == BLACK and not ia_vs_ia:
+        elif partie.turn == BLACK:
             # l'utilisateur joue avec les pièces noires
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -685,10 +706,6 @@ def main():
                     pos = pygame.mouse.get_pos()
                     lignes, col = get_row_col_from_mouse(pos)
                     partie.select(lignes, col)
-
-        if partie.turn == BLACK and ia_vs_ia:
-            value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
-            partie.ai_move(new_board)
 
 
         #Cette partie du code vérifie si un joueur a gagné la partie en appelant la méthode winner() de l'objet partie.
