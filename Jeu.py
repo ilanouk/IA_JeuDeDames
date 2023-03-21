@@ -436,12 +436,19 @@ class Partie:
     def get_board(self):
         return self.board
 
-    def ai_move(self, board):
+    def ai_move1(self, board):
         self.board = board
         #self.change_turn()
         #FONCTION CHANGE_TURN DIRECTEMENT ICI
         self.valid_moves = {}
         self.turn = WHITE if self.turn == BLACK else BLACK
+
+    def ai_move2(self, board):
+        self.board = board
+        #self.change_turn()
+        #FONCTION CHANGE_TURN DIRECTEMENT ICI
+        self.valid_moves = {}
+        self.turn = BLACK if self.turn == WHITE else WHITE
 
 
 # -------------------------- MINIMAX ---------------------------------
@@ -657,10 +664,10 @@ def main():
                     value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
                 else:
                     value, new_board = minimax(partie.get_board(), 5, float('-inf'), float('inf'), True, partie)
-                partie.ai_move(new_board)
+                partie.ai_move1(new_board)
             else:
-                value, new_board = minimax(partie2.get_board(), 4, float('-inf'), float('inf'), True, partie2)
-                partie2.ai_move(new_board)
+                value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
+                partie.ai_move2(new_board)
 
 
         #Si c'est le tour de l'ordinateur et que l'utilisateur joue contre l'ordinateur (vs_ai == True),
