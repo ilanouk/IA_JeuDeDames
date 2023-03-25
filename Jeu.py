@@ -436,50 +436,14 @@ class Partie:
     def get_board(self):
         return self.board
 
-    def ai_move1(self, board):
+    def ai_move(self, board):
         self.board = board
         #self.change_turn()
         #FONCTION CHANGE_TURN DIRECTEMENT ICI
         self.valid_moves = {}
         self.turn = WHITE if self.turn == BLACK else BLACK
 
-    def ai_move2(self, board):
-        self.board = board
-        #self.change_turn()
-        #FONCTION CHANGE_TURN DIRECTEMENT ICI
-        self.valid_moves = {}
-        self.turn = BLACK if self.turn == WHITE else WHITE
-
-
 # -------------------------- MINIMAX ---------------------------------
-
-#RED = (255,0,0)
-#WHITE = (255, 255, 255)
-
-#def minimax(position, depth, max_player, game):
-    #if depth == 0 or position.winner() != None:
-        #return position.evaluate(), position
-    
-    #if max_player:
-        #maxEval = float('-inf')
-        #best_move = None
-        #for move in get_all_moves(position, WHITE, game):
-            #evaluation = minimax(move, depth-1, False, game)[0]
-            #maxEval = max(maxEval, evaluation)
-            #if maxEval == evaluation:
-                #best_move = move
-        
-        #return maxEval, best_move
-    #else:
-        #minEval = float('inf')
-        #best_move = None
-        #for move in get_all_moves(position, BLACK, game):
-            #evaluation = minimax(move, depth-1, True, game)[0]
-            #minEval = min(minEval, evaluation)
-            #if minEval == evaluation:
-                #best_move = move
-        
-        #return minEval, best_move
 
 #fonction minimax qui utilise alpha beta, on aurait donc pu l'appeler alphabeta
 def minimax(position, depth, alpha, beta, max_player, game):
@@ -521,6 +485,83 @@ def minimax(position, depth, alpha, beta, max_player, game):
                 break
         
         return minEval, best_move
+    
+def minimax2IA(position, depth, alpha, beta, max_player, game, color):
+    #si la profondeur est atteinte ou si la partie est terminée, on retourne l'évaluation de la position
+    if depth == 0 or position.winner() != None:
+        return position.evaluate(), position
+    
+    if color == WHITE:
+        #si c'est au joueur de maximiser son score
+        if max_player:
+            maxEval = float('-inf')
+            best_move = None
+            #on parcourt toutes les positions possibles à partir de la position actuelle
+            for move in get_all_moves(position, WHITE, game):
+                #on calcule l'évaluation de la position
+                evaluation = minimax(move, depth-1, alpha, beta, False, game)[0]
+                #la meilleure évalutation choisi est celle qui maximise l'évaluation
+                maxEval = max(maxEval, evaluation)
+                #si l'évaluation maximale est égale à l'évaluation actuelle, on stocke la position actuelle comme la meilleure position
+                if maxEval == evaluation:
+                    best_move = move
+                #alpha est la meilleure évaluation maximale pour le joueur MAX
+                alpha = max(alpha, maxEval)
+                #si alpha est supérieur ou égal à beta, on arrête la recherche
+                if beta <= alpha:
+                    break
+            
+            return maxEval, best_move
+        #si c'est au joueur de minimiser son score
+        else:
+            minEval = float('inf')
+            best_move = None
+            for move in get_all_moves(position, BLACK, game):
+                evaluation = minimax(move, depth-1, alpha, beta, True, game)[0]
+                minEval = min(minEval, evaluation)
+                if minEval == evaluation:
+                    best_move = move
+                beta = min(beta, minEval)
+                if beta <= alpha:
+                    break
+            
+            return minEval, best_move
+        
+    else:
+        #si c'est au joueur de maximiser son score
+        if max_player:
+            maxEval = float('-inf')
+            best_move = None
+            #on parcourt toutes les positions possibles à partir de la position actuelle
+            for move in get_all_moves(position, BLACK, game):
+                #on calcule l'évaluation de la position
+                evaluation = minimax(move, depth-1, alpha, beta, False, game)[0]
+                #la meilleure évalutation choisi est celle qui maximise l'évaluation
+                maxEval = max(maxEval, evaluation)
+                #si l'évaluation maximale est égale à l'évaluation actuelle, on stocke la position actuelle comme la meilleure position
+                if maxEval == evaluation:
+                    best_move = move
+                #alpha est la meilleure évaluation maximale pour le joueur MAX
+                alpha = max(alpha, maxEval)
+                #si alpha est supérieur ou égal à beta, on arrête la recherche
+                if beta <= alpha:
+                    break
+            
+            return maxEval, best_move
+        #si c'est au joueur de minimiser son score
+        else:
+            minEval = float('inf')
+            best_move = None
+            for move in get_all_moves(position, WHITE, game):
+                evaluation = minimax(move, depth-1, alpha, beta, True, game)[0]
+                minEval = min(minEval, evaluation)
+                if minEval == evaluation:
+                    best_move = move
+                beta = min(beta, minEval)
+                if beta <= alpha:
+                    break
+            
+            return minEval, best_move
 
 
 
@@ -659,15 +700,15 @@ def main():
         if ia_vs_ia:
             if partie.turn == WHITE:
                 if ai_level == 1:
-                    value, new_board = minimax(partie.get_board(), 3, float('-inf'), float('inf'), True, partie)
+                    value, new_board = minimax2IA(partie.get_board(), 3, float('-inf'), float('inf'), True, partie, WHITE)
                 elif ai_level == 2:
-                    value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
+                    value, new_board = minimax2IA(partie.get_board(), 4, float('-inf'), float('inf'), True, partie, WHITE)
                 else:
-                    value, new_board = minimax(partie.get_board(), 5, float('-inf'), float('inf'), True, partie)
-                partie.ai_move1(new_board)
+                    value, new_board = minimax2IA(partie.get_board(), 5, float('-inf'), float('inf'), True, partie, WHITE)
+                partie.ai_move(new_board)
             else:
-                value, new_board = minimax(partie.get_board(), 4, float('-inf'), float('inf'), True, partie)
-                partie.ai_move2(new_board)
+                value, new_board = minimax2IA(partie.get_board(), 5, float('-inf'), float('inf'), True, partie, BLACK)
+                partie.ai_move(new_board)
 
 
         #Si c'est le tour de l'ordinateur et que l'utilisateur joue contre l'ordinateur (vs_ai == True),
