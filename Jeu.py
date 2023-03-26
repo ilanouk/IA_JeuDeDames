@@ -16,15 +16,12 @@ YELLOW = (255,255,0)
 CASE_CLAIRE = (220,191,145)
 CASE_SOMBRE = (138,88,41)
 
-#C:/Users/iland/OneDrive/Images/Captures d’écran/Oui.png
-#/Users/samlelouey/Desktop/crown.png
-#CROWN = pygame.transform.scale(pygame.image.load('C:/Users/iland/OneDrive/Images/Captures d’écran/Oui.png'), (44, 25))
-
 # CLASSE PIECE ---------------------------------------------------------------------------
 class Piece:
-    PADDING = 15
-    OUTLINE = 2
+    PADDING = 15 #marge entre le contour de la piece et le contour de la case
+    OUTLINE = 2 #contour de la piece
 
+    # équivalent du constructeur en java
     def __init__(self, lignes, col, color):
         self.lignes = lignes
         self.col = col
@@ -34,24 +31,27 @@ class Piece:
         self.y_coord = 0
         self.position()
 
+    # position de la piece pour x et y
     def position(self):
-        self.x_coord = SQUARE_SIZE * self.col + SQUARE_SIZE // 2
+        self.x_coord = SQUARE_SIZE * self.col + SQUARE_SIZE // 2 # //2 pour centrer la piece
         self.y_coord = SQUARE_SIZE * self.lignes + SQUARE_SIZE // 2
 
     def make_king(self):
         self.king = True
     
+    # dessine la piece
     def draw(self, win):
-        #radius = SQUARE_SIZE//2 - self.PADDING
         pygame.draw.circle(win, self.color, (self.x_coord, self.y_coord) , 30)
         if self.king:
             pygame.draw.circle(win, YELLOW, (self.x_coord, self.y_coord) , 30)
 
+    # déplace la piece
     def move(self, lignes, col):
         self.lignes = lignes
         self.col = col
         self.position()
 
+    # vérifie si la piece est sélectionnée
     def __repr__(self):
         return str(self.color)
 
@@ -70,8 +70,12 @@ class Board:
             for col in range(row % 2, COLS, 2):
                 pygame.draw.rect(win, RED, (row*SQUARE_SIZE, col *SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
+    # fonction d'évaluation nécessaire à minimax
     def evaluate(self):
         return self.white_left - self.black_left + (self.white_kings * 0.5 - self.black_kings * 0.5)
+    
+    def evaluateBlack(self):
+        return self.black_left - self.white_left + (self.black_kings * 0.5 - self.white_kings * 0.5)
 
     def get_all_pieces(self, color):
         pieces = []
@@ -103,23 +107,6 @@ class Board:
     def get_piece(self, lignes, col):
         return self.board[lignes][col]
 
-    #def create_board(self):
-        #for lignes in range(LIGNES):
-            #self.board.append([])
-            #for col in range(COLS):
-                #if col % 2 == ((lignes +  1) % 2):
-                    #créé les pions blanc pour les 4 premières lignes
-                    #if lignes < 4:
-                        #self.board[lignes].append(Piece(lignes, col, WHITE))
-                    #créé les pions noir de la 7 ème ligne jusqu'à la fin du damier
-                    #elif lignes > 5:
-                        #self.board[lignes].append(Piece(lignes, col, BLACK))
-                    #créé des cases libres entre les pions blanc et noir (5e et 6e lignes)
-                    #else:
-                        #self.board[lignes].append(0)
-                #créé des cases libres entre chaque pions
-                #else:
-                    #self.board[lignes].append(0)
 
     #Dans cette version, j'ai créé une liste de listes remplie de zéros en utilisant la multiplication d'une liste par un entier.
     #Ensuite, j'ai modifié la boucle pour itérer sur toutes les colonnes de chaque ligne.
@@ -183,19 +170,6 @@ class Board:
         for ligne, col in piece_coords:
             self.board[ligne][col].draw(win)
 
-    #def draw(self, win):
-        #win.fill(CASE_SOMBRE)
-        #for lignes in range(LIGNES):
-            #for col in range(lignes % 2, COLS, 2):
-                #pygame.draw.rect(win, CASE_CLAIRE, (lignes*SQUARE_SIZE, col*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
-                
-        #for lignes in range(LIGNES):
-            #for col in range(COLS):
-                #piece = self.board[lignes][col]
-                #si la case n'est pas libre, alors on dessine le pion
-                #if piece != 0:
-                    #piece.draw(win)
-
     def remove(self, pieces):
         for piece in pieces:
             if piece != 0:
@@ -205,16 +179,6 @@ class Board:
                     self.white_left -= 1
                 self.board[piece.lignes][piece.col] = 0
 
-
-
-    #def remove(self, pieces):
-        #for piece in pieces:
-            #self.board[piece.lignes][piece.col] = 0
-            #if piece != 0:
-                #if piece.color == BLACK:
-                    #self.black_left -= 1
-                #else:
-                    #self.white_left -= 1
     
     #La première ligne teste si le nombre de pions noirs restants est inférieur ou égal à zéro.
     #Si c'est le cas, la fonction renvoie la constante "WHITE" pour indiquer que les blancs ont gagné.
@@ -223,15 +187,6 @@ class Board:
     #Enfin, si aucun des deux joueurs n'a encore gagné, la troisième ligne renvoie None.
     def winner(self):
         return WHITE if self.black_left <= 0 else BLACK if self.white_left <= 0 else None
-
-
-    #def winner(self):
-        #if self.black_left <= 0:
-            #return WHITE
-        #elif self.white_left <= 0:
-            #return BLACK
-        
-        #return None 
     
     def get_valid_moves(self, piece):
         available_moves = {}
@@ -487,11 +442,12 @@ def minimax(position, depth, alpha, beta, max_player, game):
         return minEval, best_move
     
 def minimax2IA(position, depth, alpha, beta, max_player, game, color):
-    #si la profondeur est atteinte ou si la partie est terminée, on retourne l'évaluation de la position
-    if depth == 0 or position.winner() != None:
-        return position.evaluate(), position
     
     if color == WHITE:
+        #si la profondeur est atteinte ou si la partie est terminée, on retourne l'évaluation de la position
+        if depth == 0 or position.winner() != None:
+            return position.evaluate(), position
+        
         #si c'est au joueur de maximiser son score
         if max_player:
             maxEval = float('-inf')
@@ -528,6 +484,10 @@ def minimax2IA(position, depth, alpha, beta, max_player, game, color):
             return minEval, best_move
         
     else:
+        #si la profondeur est atteinte ou si la partie est terminée, on retourne l'évaluation de la position
+        if depth == 0 or position.winner() != None:
+            return position.evaluateBlack(), position
+        
         #si c'est au joueur de maximiser son score
         if max_player:
             maxEval = float('-inf')
@@ -707,7 +667,7 @@ def main():
                     value, new_board = minimax2IA(partie.get_board(), 5, float('-inf'), float('inf'), True, partie, WHITE)
                 partie.ai_move(new_board)
             else:
-                value, new_board = minimax2IA(partie.get_board(), 5, float('-inf'), float('inf'), True, partie, BLACK)
+                value, new_board = minimax2IA(partie.get_board(), 4, float('-inf'), float('inf'), True, partie, BLACK)
                 partie.ai_move(new_board)
 
 
